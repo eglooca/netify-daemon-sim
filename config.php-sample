@@ -1,0 +1,8 @@
+<?php
+
+// Enable debug mode?
+define('DEBUG', false);
+
+// Which syslog facility to use?
+define('SYSLOG_FACILITY', LOG_LOCAL5);
+
