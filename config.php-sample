@@ -6,3 +6,35 @@ define('DEBUG', false);
 // Which syslog facility to use?
 define('SYSLOG_FACILITY', LOG_LOCAL5);
 
+// Number of flows per day
+define('MAX_FLOWS_PER_DAY', 10000000);
+
+// Number of LAN interfaces
+define('MAX_LAN_INTERFACES', 1);
+
+// Number of WAN interfaces
+define('MAX_WAN_INTERFACES', 1);
+
+// Number of remote networks to generate
+define('MAX_REMOTE_NETS', 100);
+
+// Maximum number of JSON upload to buffer (in KiB)
+define('MAX_UPLOAD_BUFFER_SIZE', 2 * 1024);
+
+// Purge percentage range low
+define('PURGE_PERC_LOW', 10);
+
+// Purge percentage range high
+define('PURGE_PERC_HIGH', 30);
+
+// Update interval (in seconds)
+define('INTERVAL', 15);
+
+// Upload URL
+define('URL_UPLOAD', 'https://v1-netify-sink.egloo.ca/');
+
+// Client UUID
+define('UUID_CLIENT', 'DE-AD-BE-EF');
+
+// Realm UUID Path
+define('UUID_REALM_PATH', 'realm.uuid');
