@@ -6,6 +6,11 @@ define('DEBUG', false);
 // Which syslog facility to use?
 define('SYSLOG_FACILITY', LOG_LOCAL5);
 
+// Test realm database credentials
+define('DB_HOST', 'netify-devel-db.egloo.ca');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
 // Number of flows per day
 define('MAX_FLOWS_PER_DAY', 10000000);
 
@@ -36,5 +41,14 @@ define('URL_UPLOAD', 'https://v1-netify-sink.egloo.ca/');
 // Client UUID
 define('UUID_CLIENT', 'DE-AD-BE-EF');
 
-// Realm UUID Path
+// Realm UUID path
 define('UUID_REALM_PATH', 'realm.uuid');
+
+// Client query report path
+define('CLIENT_QUERY_REPORT_PATH', 'client-queries-report.csv');
+
+// Client query delay low threshold
+define('CLIENT_QUERY_DELAY_LOW', 5);
+
+// Client query delay high threshold
+define('CLIENT_QUERY_DELAY_HIGH', 20);

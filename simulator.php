@@ -51,13 +51,41 @@ class NetifyFlow
 
     private $iface = null;
     private $protocols = array(5 => 'DNS', 91 => 'SSL', 188 => 'QUIC');
-    private $services = array(0 => 'Unknown', 1000 => 'netify.google', 1001 => 'netify.youtube');
+    private $services = array(
+        0 => 'Unknown',
+        1000 => 'netify.google',
+        1001 => 'netify.gmail',
+        1002 => 'netify.apple',
+        1003 => 'netify.apple-icloud',
+        1004 => 'netify.amazon',
+        1005 => 'netify.cnn',
+        1006 => 'netify.github',
+        1007 => 'netify.youtube'
+    );
     private $domains = array(
         0 => array('abc.com', 'def.com', 'ghi.com', 'jkl.com', 'mno.com', 'pqr.com', 'stu.com', 'vwx.com', 'xyz.com'),
         1000 => array(
-            'google.com', 'images.google.com', 'play.google.com'
+            'google.com', 'google.ca', 'images.google.com', 'play.google.com'
         ),
         1001 => array(
+            'gmail.com'
+        ),
+        1002 => array(
+            'apple.com'
+        ),
+        1003 => array(
+            'icloud.com'
+        ),
+        1004 => array(
+            'amazon.ca', 'amazon.com'
+        ),
+        1005 => array(
+            'cnn.com'
+        ),
+        1006 => array(
+            'github.com'
+        ),
+        1007 => array(
             'youtube.com'
         )
     );
