@@ -22,7 +22,7 @@ fclose($fh);
 
 if (!file_exists(CLIENT_QUERY_REPORT_PATH)) {
     $fh = fopen(CLIENT_QUERY_REPORT_PATH, 'w');
-    fprintf($fh, "\"timestamp\",\"query\",\"time\"\n");
+    fprintf($fh, "\"timestamp\",\"query\",\"time\",\"rows\"\n");
 }
 else
     $fh = fopen('client-queries-report.csv', 'a+');
@@ -72,8 +72,8 @@ function execute_query()
         $delay = mt_rand(CLIENT_QUERY_DELAY_LOW, CLIENT_QUERY_DELAY_HIGH);
 
         if (flock($fh, LOCK_EX)) {
-            fprintf($fh, "%d,%d,%.02f\n",
-                intval(round($tm_start)), $query_id + 1, $tm_complete);
+            fprintf($fh, "%d,%d,%.02f,%d\n",
+                intval(round($tm_start)), $query_id + 1, $tm_complete, $rows);
             flock($fh, LOCK_UN);
         }
         else {
