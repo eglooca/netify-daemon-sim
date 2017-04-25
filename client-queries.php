@@ -40,40 +40,68 @@ $stmt_query[] = $dbh->prepare(SQL_QUERY1);
 $stmt_query[] = $dbh->prepare(SQL_QUERY2);
 $stmt_query[] = $dbh->prepare(SQL_QUERY3);
 
-while (true) {
-    $query_id = mt_rand(0, count($stmt_query) - 1);
-    $stmt = $stmt_query[$query_id];
+function execute_query()
+{
+    global $fh;
+    global $stmt_query;
 
-    $now = date_create();
-    if ($query_id < 2)
-        date_sub($now, date_interval_create_from_date_string('6 hours'));
-    else
-        date_sub($now, date_interval_create_from_date_string('1 day'));
+    while (true) {
+        $query_id = mt_rand(0, count($stmt_query) - 1);
+        $stmt = $stmt_query[$query_id];
 
-    $timeval = strftime('%F %T', date_timestamp_get($now));
+        $now = date_create();
+        if ($query_id < 2)
+            date_sub($now, date_interval_create_from_date_string('6 hours'));
+        else
+            date_sub($now, date_interval_create_from_date_string('1 day'));
 
-    $stmt->bindValue(':timeval', $timeval, PDO::PARAM_STR);
+        $timeval = strftime('%F %T', date_timestamp_get($now));
 
-    $tm_start = gettimeofday(true);
+        $stmt->bindValue(':timeval', $timeval, PDO::PARAM_STR);
 
-    printf("Executing query%d...\n", $query_id + 1);
+        $tm_start = gettimeofday(true);
 
-    $stmt->execute();
+        printf("%5d: Executing query%d...\n", posix_getpid(), $query_id + 1);
 
-    $rows = 0;
-    foreach ($stmt->fetchAll() as $row) $rows++;
+        $stmt->execute();
 
-    $tm_complete = gettimeofday(true) - $tm_start;
-    $delay = mt_rand(CLIENT_QUERY_DELAY_LOW, CLIENT_QUERY_DELAY_HIGH);
+        $rows = 0;
+        foreach ($stmt->fetchAll() as $row) $rows++;
 
-    fprintf($fh, "%d,%d,%.02f\n",
-        intval(round($tm_start)), $query_id + 1, $tm_complete);
+        $tm_complete = gettimeofday(true) - $tm_start;
+        $delay = mt_rand(CLIENT_QUERY_DELAY_LOW, CLIENT_QUERY_DELAY_HIGH);
 
-    printf("Fetched %d row(s) via query%d in %.02f second(s).  Sleeping for %ds...\n",
-        $rows, $query_id + 1, $tm_complete, $delay);
+        if (flock($fh, LOCK_EX)) {
+            fprintf($fh, "%d,%d,%.02f\n",
+                intval(round($tm_start)), $query_id + 1, $tm_complete);
+            flock($fh, LOCK_UN);
+        }
+        else {
+            printf("%5d: Error acquiring file lock.\n", posix_getpid());
+            exit(1);
+        }
 
-    sleep($delay);
+        printf("%5d: Fetched %d row(s) via query%d in %.02f second(s).  Sleeping for %ds...\n",
+            posix_getpid(), $rows, $query_id + 1, $tm_complete, $delay);
+
+        sleep($delay);
+    }
 }
+
+for ($i = 0; $i < MAX_THREADS; $i++) {
+    switch (($pid = pcntl_fork())) {
+    case -1:
+        printf("Error forking worker process.\n");
+        exit(1);
+    case 0:
+        execute_query();
+        break;
+    default:
+        printf("Started worker process: %d\n", $pid);
+    }
+}
+
+pcntl_wait($status);
 
 exit(0);
 

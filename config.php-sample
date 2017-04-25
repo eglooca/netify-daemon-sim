@@ -11,6 +11,9 @@ define('DB_HOST', 'netify-devel-db.egloo.ca');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
+// Number of parallel query workers to execute
+define('MAX_THREADS', 3);
+
 // Number of flows per day
 define('MAX_FLOWS_PER_DAY', 10000000);
 
