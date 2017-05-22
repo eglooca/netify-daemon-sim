@@ -32,18 +32,18 @@ if (!is_resource($fh)) {
     exit(1);
 }
 
-$dbh = new PDO(sprintf('mysql:host=%s;dbname=%s',
-    DB_HOST, "netify_{$uuid_realm}"), DB_USER, DB_PASS);
-
-$stmt_query = array();
-$stmt_query[] = $dbh->prepare(SQL_QUERY1);
-$stmt_query[] = $dbh->prepare(SQL_QUERY2);
-$stmt_query[] = $dbh->prepare(SQL_QUERY3);
-
 function execute_query()
 {
     global $fh;
-    global $stmt_query;
+    global $uuid_realm;
+
+    $dbh = new PDO(sprintf('mysql:host=%s;dbname=%s',
+        DB_HOST, "netify_{$uuid_realm}"), DB_USER, DB_PASS);
+
+    $stmt_query = array();
+    $stmt_query[] = $dbh->prepare(SQL_QUERY1);
+    $stmt_query[] = $dbh->prepare(SQL_QUERY2);
+    $stmt_query[] = $dbh->prepare(SQL_QUERY3);
 
     while (true) {
         $query_id = mt_rand(0, count($stmt_query) - 1);
@@ -63,7 +63,11 @@ function execute_query()
 
         printf("%5d: Executing query%d...\n", posix_getpid(), $query_id + 1);
 
-        $stmt->execute();
+        if (! $stmt->execute()) {
+            $info = $stmt->errorInfo();
+            printf("%5d: Error running query%d: %s\n",
+                posix_getpid(), $query_id + 1, $info[2]);
+        }
 
         $rows = 0;
         foreach ($stmt->fetchAll() as $row) $rows++;
